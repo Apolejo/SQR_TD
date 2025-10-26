@@ -3,26 +3,106 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine/Curve.h"
 #include "SQR_TD/Data/DA_Wave.h"
+#include "SQR_TD/Core/TDSpawningStructures.h"
 #include "WaveManager.generated.h"
+
+class ATDEnemySpawner;
+class ATDGameState;
 
 /**
  * WaveManager - Server-authoritative wave management
- * Handles wave progression, timing, and enemy spawning coordination
+ * Handles wave progression, timing, and enemy spawning coordination with token-bucket system
  */
 UCLASS()
-class SQR_TD_API AWaveManager : public AActor
+class SQR_TD_API ATDWaveManager : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	AWaveManager();
+	ATDWaveManager();
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
-	// Wave management functions (to be implemented)
-	// StartWave, EndWave, GetCurrentWave, etc.
+	// Wave data
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave Data")
+	TArray<UDataAsset*> Waves;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave State")
+	int32 CurrentWaveIndex = 0;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy State")
+	int32 AliveEnemies = 0;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy State")
+	int32 MaxConcurrentEnemies = 50;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Token System")
+	int32 AvailableTokens = 0;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave State")
+	bool bWaveRunning = false;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave State")
+	int32 WaveBudgetRemaining = 0;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave Settings")
+	float IntermissionDuration = 10.0f;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Scaling")
+	UCurveFloat* PlayerCountScalingCurve = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawners")
+	TArray<TObjectPtr<ATDEnemySpawner>> SpawnerRefs;
+
+	// Wave management methods
+	UFUNCTION(BlueprintCallable, Category = "Wave Management")
+	void InitWave(int32 WaveIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "Wave Management")
+	void StartWave();
+
+	UFUNCTION(BlueprintCallable, Category = "Wave Management")
+	void PauseSpawning();
+
+	UFUNCTION(BlueprintCallable, Category = "Wave Management")
+	void ResumeSpawning();
+
+	UFUNCTION(BlueprintCallable, Category = "Token System")
+	int32 TryGrantTokens(int32 Requested);
+
+	UFUNCTION(BlueprintCallable, Category = "Enemy Management")
+	void OnEnemySpawned();
+
+	UFUNCTION(BlueprintCallable, Category = "Enemy Management")
+	void OnEnemyGone();
+
+	UFUNCTION(BlueprintCallable, Category = "Spawner Management")
+	void OnGroupFinished(ATDEnemySpawner* Spawner);
+
+	UFUNCTION(BlueprintCallable, Category = "Wave Management")
+	void EndWave();
+
+	UFUNCTION(BlueprintCallable, Category = "Scaling")
+	int32 ScaleForPlayers(int32 Base, int32 Players);
+
+	// Timer callbacks
+	UFUNCTION()
+	void OnWaveTimerExpired();
+
+	UFUNCTION()
+	void OnIntermissionTimerExpired();
+
+private:
+	// Timer handles
+	FTimerHandle WaveTimerHandle;
+	FTimerHandle IntermissionTimerHandle;
+
+	// Helper methods
+	void UpdateGameState();
+	void DistributeSpawnGroups();
 };

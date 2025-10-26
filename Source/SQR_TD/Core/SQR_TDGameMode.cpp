@@ -51,11 +51,20 @@ void ATDGameMode::EndMatch(bool bVictory)
 void ATDGameMode::Server_StartNextWave()
 {
 	// Find and call WaveManager
-	AWaveManager* WaveManager = FindObject<AWaveManager>(GetWorld(), TEXT("WaveManager"));
+	ATDWaveManager* WaveManager = FindObject<ATDWaveManager>(GetWorld(), TEXT("WaveManager"));
 	if (WaveManager)
 	{
 		// Call WaveManager's start wave method
-		// WaveManager->StartNextWave();
+		WaveManager->StartWave();
+	}
+	else
+	{
+		// Spawn WaveManager if it doesn't exist
+		WaveManager = GetWorld()->SpawnActor<ATDWaveManager>();
+		if (WaveManager)
+		{
+			WaveManager->StartWave();
+		}
 	}
 }
 
