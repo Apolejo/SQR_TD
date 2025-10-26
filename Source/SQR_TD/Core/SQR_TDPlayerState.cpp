@@ -23,6 +23,7 @@ void ATDPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void ATDPlayerState::OnRep_Gold()
 {
 	OnGoldChanged.Broadcast(Gold);
+	UE_LOG(LogTemp, Warning, TEXT("Gold Received"));
 }
 
 void ATDPlayerState::OnRep_TDScore()

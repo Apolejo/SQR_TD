@@ -1,6 +1,7 @@
 #include "SQR_TDGameMode.h"
 #include "SQR_TD/Managers/WaveManager.h"
 #include "SQR_TDPlayerState.h"
+#include "SQR_TDGameState.h"
 #include "GameFramework/GameState.h"
 
 ATDGameMode::ATDGameMode()
@@ -22,13 +23,14 @@ void ATDGameMode::StartMatch()
 	}
 
 	bMatchActive = true;
-	
+	UE_LOG(LogTemp, Warning, TEXT("Match Started"));
 	// Give starting gold to all players
-	if (AGameState* GS = GetGameState<AGameState>())
+	if (AGameStateBase* GS = GetGameState<AGameStateBase>())
 	{
 		for (APlayerState* Player : GS->PlayerArray)
 		{
 			ApplyGoldToPlayer(Player, StartingGoldPerPlayer);
+			UE_LOG(LogTemp, Warning, TEXT("Gold Added to Player"));
 		}
 	}
 }
