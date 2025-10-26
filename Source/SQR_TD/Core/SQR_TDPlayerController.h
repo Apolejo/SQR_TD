@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "SQR_TD/Core/TDStructures.h"
+#include "TDStructures.h"
 #include "SQR_TD/Building/BuildSystemComponent.h"
 #include "SQR_TDPlayerController.generated.h"
 

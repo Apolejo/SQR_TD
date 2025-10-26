@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "SQR_TD/Core/TDStructures.h"
+#include "TDStructures.h"
 #include "SQR_TDGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyReachedGoal, AActor*, Enemy);
@@ -57,5 +57,5 @@ public:
 	void ApplyGoldToPlayer(APlayerState* Player, int32 Amount);
 
 	UFUNCTION(BlueprintCallable, Category = "Enemy Management")
-	void OnEnemyReachedGoal(AActor* Enemy);
+	void HandleEnemyReachedGoal(AActor* Enemy);
 };

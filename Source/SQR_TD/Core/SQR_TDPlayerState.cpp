@@ -15,7 +15,7 @@ void ATDPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ATDPlayerState, Gold);
-	DOREPLIFETIME(ATDPlayerState, Score);
+	DOREPLIFETIME(ATDPlayerState, TDScore);
 	DOREPLIFETIME(ATDPlayerState, Kills);
 	DOREPLIFETIME(ATDPlayerState, Assists);
 }
@@ -25,9 +25,9 @@ void ATDPlayerState::OnRep_Gold()
 	OnGoldChanged.Broadcast(Gold);
 }
 
-void ATDPlayerState::OnRep_Score()
+void ATDPlayerState::OnRep_TDScore()
 {
-	OnScoreChanged.Broadcast(Score);
+	OnTDScoreChanged.Broadcast(TDScore);
 }
 
 void ATDPlayerState::AddGold(int32 Amount)
@@ -50,12 +50,12 @@ bool ATDPlayerState::SpendGold(int32 Amount)
 	return false;
 }
 
-void ATDPlayerState::AddScore(int32 Amount)
+void ATDPlayerState::AddTDScore(int32 Amount)
 {
 	if (HasAuthority())
 	{
-		Score += Amount;
-		OnRep_Score();
+		TDScore += Amount;
+		OnRep_TDScore();
 	}
 }
 
@@ -64,7 +64,7 @@ void ATDPlayerState::AddKill()
 	if (HasAuthority())
 	{
 		Kills++;
-		AddScore(10); // Give score for kill
+		AddTDScore(10); // Give score for kill
 	}
 }
 
@@ -73,6 +73,6 @@ void ATDPlayerState::AddAssist()
 	if (HasAuthority())
 	{
 		Assists++;
-		AddScore(5); // Give score for assist
+		AddTDScore(5); // Give score for assist
 	}
 }

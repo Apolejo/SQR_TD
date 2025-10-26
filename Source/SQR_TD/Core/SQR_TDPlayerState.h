@@ -29,15 +29,15 @@ protected:
 	void OnRep_Gold();
 	
 	UFUNCTION()
-	void OnRep_Score();
+	void OnRep_TDScore();
 
 public:
 	// Replicated properties
 	UPROPERTY(ReplicatedUsing = OnRep_Gold, BlueprintReadOnly, Category = "Player Resources")
 	int32 Gold = 0;
 
-	UPROPERTY(ReplicatedUsing = OnRep_Score, BlueprintReadOnly, Category = "Player Stats")
-	int32 Score = 0;
+	UPROPERTY(ReplicatedUsing = OnRep_TDScore, BlueprintReadOnly, Category = "Player Stats")
+	int32 TDScore = 0;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player Stats")
 	int32 Kills = 0;
@@ -50,7 +50,7 @@ public:
 	FOnGoldChanged OnGoldChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
-	FOnScoreChanged OnScoreChanged;
+	FOnScoreChanged OnTDScoreChanged;
 
 	// Server-only methods
 	UFUNCTION(BlueprintCallable, Category = "Player Resources")
@@ -60,7 +60,7 @@ public:
 	bool SpendGold(int32 Amount);
 
 	UFUNCTION(BlueprintCallable, Category = "Player Stats")
-	void AddScore(int32 Amount);
+	void AddTDScore(int32 Amount);
 
 	UFUNCTION(BlueprintCallable, Category = "Player Stats")
 	void AddKill();

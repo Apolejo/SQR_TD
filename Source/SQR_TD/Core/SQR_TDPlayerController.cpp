@@ -1,7 +1,7 @@
 #include "SQR_TDPlayerController.h"
-#include "SQR_TD/Core/ATDPlayerState.h"
-#include "SQR_TD/Core/ATDGameMode.h"
-#include "SQR_TD/Core/ATDGameState.h"
+#include "SQR_TDPlayerState.h"
+#include "SQR_TDGameMode.h"
+#include "SQR_TDGameState.h"
 
 ATDPlayerController::ATDPlayerController()
 {
@@ -55,9 +55,9 @@ void ATDPlayerController::Server_RequestBuildTower_Implementation(const FTowerBu
 	}
 
 	// Deduct gold
-	if (ATDPlayerState* PlayerState = Cast<ATDPlayerState>(GetPlayerState()))
+	if (ATDPlayerState* TDPlayerState = Cast<ATDPlayerState>(GetPlayerState<APlayerState>()))
 	{
-		if (PlayerState->SpendGold(TowerSpec.Cost))
+		if (TDPlayerState->SpendGold(TowerSpec.Cost))
 		{
 			// Spawn tower
 			// Implementation depends on tower spawning system
@@ -115,9 +115,9 @@ void ATDPlayerController::Client_PlayPing_Implementation(const FVector& PingLoca
 
 bool ATDPlayerController::CanAffordTower(int32 Cost) const
 {
-	if (ATDPlayerState* PlayerState = Cast<ATDPlayerState>(GetPlayerState()))
+	if (ATDPlayerState* TDPlayerState = Cast<ATDPlayerState>(GetPlayerState<APlayerState>()))
 	{
-		return PlayerState->Gold >= Cost;
+		return TDPlayerState->Gold >= Cost;
 	}
 	return false;
 }

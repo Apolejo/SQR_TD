@@ -31,7 +31,7 @@ public:
 	void OnGoldChanged(int32 NewGold);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
-	void OnScoreChanged(int32 NewScore);
+	void OnTDScoreChanged(int32 NewScore);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
 	void OnTeamLivesChanged(int32 NewLives);

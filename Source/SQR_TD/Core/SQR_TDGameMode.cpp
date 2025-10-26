@@ -1,6 +1,7 @@
 #include "SQR_TDGameMode.h"
 #include "SQR_TD/Managers/WaveManager.h"
-#include "SQR_TD/Core/ATDPlayerState.h"
+#include "SQR_TDPlayerState.h"
+#include "GameFramework/GameState.h"
 
 ATDGameMode::ATDGameMode()
 {
@@ -23,9 +24,12 @@ void ATDGameMode::StartMatch()
 	bMatchActive = true;
 	
 	// Give starting gold to all players
-	for (APlayerState* Player : GameState->PlayerArray)
+	if (AGameState* GS = GetGameState<AGameState>())
 	{
-		ApplyGoldToPlayer(Player, StartingGoldPerPlayer);
+		for (APlayerState* Player : GS->PlayerArray)
+		{
+			ApplyGoldToPlayer(Player, StartingGoldPerPlayer);
+		}
 	}
 }
 
@@ -76,7 +80,7 @@ void ATDGameMode::ApplyGoldToPlayer(APlayerState* Player, int32 Amount)
 	}
 }
 
-void ATDGameMode::OnEnemyReachedGoal(AActor* Enemy)
+void ATDGameMode::HandleEnemyReachedGoal(AActor* Enemy)
 {
 	if (bLoseOnLivesZero)
 	{
