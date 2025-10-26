@@ -1,17 +1,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/Pawn.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayTagContainer.h"
+#include "Components/StaticMeshComponent.h"
 #include "EnemyBase.generated.h"
 
 /**
  * EnemyBase - Base class for all enemy types
- * Server-authoritative enemy behavior and state
+ * Simple dummy enemy for testing spawning system
  */
-UCLASS()
-class SQR_TD_API AEnemyBase : public ACharacter
+UCLASS(Blueprintable, BlueprintType)
+class SQR_TD_API AEnemyBase : public APawn
 {
 	GENERATED_BODY()
 
@@ -22,7 +23,41 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	// Dummy mesh component for visual representation
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* DummyMesh;
+
+	// Basic enemy properties
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Enemy Stats")
+	float Health = 100.0f;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Enemy Stats")
+	float MaxHealth = 100.0f;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Enemy Stats")
+	float Speed = 300.0f;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Enemy Stats")
+	int32 LaneID = 0;
+
 public:
-	// Enemy properties and behavior (to be implemented)
-	// Health, speed, damage, effects, etc.
+	// Basic enemy functions
+	UFUNCTION(BlueprintCallable, Category = "Enemy")
+	void SetLaneID(int32 NewLaneID);
+
+	// Override base class TakeDamage
+	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Enemy")
+	bool IsAlive() const;
+
+	// Blueprint events
+	UFUNCTION(BlueprintImplementableEvent, Category = "Enemy Events")
+	void OnEnemySpawned();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Enemy Events")
+	void OnEnemyDestroyed();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Enemy Events")
+	void OnEnemyDamaged(float NewHealth, float DamageAmount);
 };

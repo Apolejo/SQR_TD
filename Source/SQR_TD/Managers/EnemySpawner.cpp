@@ -1,10 +1,10 @@
 #include "EnemySpawner.h"
 #include "SQR_TD/Data/DA_Enemy.h"
 #include "SQR_TD/Managers/WaveManager.h"
+#include "SQR_TD/Enemies/EnemyBase.h"
 #include "Engine/World.h"
-#include "TimerManager.h"
-#include "Engine/Engine.h"
 #include "EngineUtils.h"
+#include "TimerManager.h"
 
 ATDEnemySpawner::ATDEnemySpawner()
 {
@@ -219,10 +219,13 @@ void ATDEnemySpawner::SpawnEnemy(TSubclassOf<AActor> EnemyClass)
 	SpawnParams.Instigator = GetInstigator();
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	AActor* SpawnedEnemy = GetWorld()->SpawnActor<AActor>(EnemyClass, SpawnPoint.GetLocation(), SpawnPoint.GetRotation().Rotator(), SpawnParams);
+	AEnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(AEnemyBase::StaticClass(), SpawnPoint.GetLocation(), SpawnPoint.GetRotation().Rotator(), SpawnParams);
 	
 	if (SpawnedEnemy)
 	{
+		// Set lane ID for the enemy
+		SpawnedEnemy->SetLaneID(LaneID);
+		
 		// Bind to destruction event
 		SpawnedEnemy->OnDestroyed.AddDynamic(this, &ATDEnemySpawner::OnEnemyDestroyed);
 		
