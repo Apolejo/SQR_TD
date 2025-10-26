@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
-#include "SQR_TD/Data/DA_Tower.generated.h"
+#include "DA_Tower.generated.h"
 
 /**
  * DA_Tower - Data asset for tower configuration

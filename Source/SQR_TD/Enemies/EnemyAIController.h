@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "SQR_TD/Enemies/EnemyAIController.generated.h"
+#include "EnemyAIController.generated.h"
 
 /**
  * EnemyAIController - AI controller for enemy behavior

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
-#include "SQR_TD/Data/DA_Enemy.generated.h"
+#include "DA_Enemy.generated.h"
 
 /**
  * DA_Enemy - Data asset for enemy configuration

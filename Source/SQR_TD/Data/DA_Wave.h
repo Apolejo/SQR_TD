@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
-#include "SQR_TD/Data/DA_Wave.generated.h"
+#include "DA_Wave.generated.h"
 
 /**
  * DA_Wave - Data asset for wave configuration

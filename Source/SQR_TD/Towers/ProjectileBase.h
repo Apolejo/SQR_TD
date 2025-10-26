@@ -4,7 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayTagContainer.h"
-#include "SQR_TD/Towers/ProjectileBase.generated.h"
+#include "ProjectileBase.generated.h"
 
 /**
  * ProjectileBase - Base class for all projectile types

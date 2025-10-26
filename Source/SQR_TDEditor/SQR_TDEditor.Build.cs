@@ -22,8 +22,7 @@ public class SQR_TDEditor : ModuleRules
 			"ToolMenus",
 			"EditorStyle",
 			"EditorWidgets",
-			"PropertyEditor",
-			"DataAssetEditor"
+			"PropertyEditor"
 		});
 	}
 }

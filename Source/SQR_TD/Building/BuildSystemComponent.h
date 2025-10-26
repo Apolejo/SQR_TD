@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "SQR_TD/Building/BuildSystemComponent.generated.h"
+#include "BuildSystemComponent.generated.h"
 
 /**
  * BuildSystemComponent - Handles tower placement and building

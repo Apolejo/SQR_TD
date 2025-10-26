@@ -4,7 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayTagContainer.h"
-#include "SQR_TD/Enemies/EnemyBase.generated.h"
+#include "EnemyBase.generated.h"
 
 /**
  * EnemyBase - Base class for all enemy types

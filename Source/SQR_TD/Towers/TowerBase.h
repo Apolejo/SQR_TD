@@ -4,7 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayTagContainer.h"
-#include "SQR_TD/Towers/TowerBase.generated.h"
+#include "TowerBase.generated.h"
 
 /**
  * TowerBase - Base class for all tower types
