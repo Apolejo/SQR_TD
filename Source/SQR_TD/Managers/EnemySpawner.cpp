@@ -230,6 +230,14 @@ void ATDEnemySpawner::SpawnEnemy(TSubclassOf<AActor> EnemyClass)
 		// Set lane ID for the enemy
 		SpawnedEnemy->SetLaneID(LaneID);
 		
+		// Set movement direction (forward from spawn point)
+		FVector ForwardDirection = SpawnPoint.GetRotation().GetForwardVector();
+		SpawnedEnemy->SetMoveDirection(ForwardDirection);
+		
+		// Set target location (1000 units forward)
+		FVector TargetLocation = SpawnPoint.GetLocation() + (ForwardDirection * 1000.0f);
+		SpawnedEnemy->SetTargetLocation(TargetLocation);
+		
 		// Bind to destruction event
 		SpawnedEnemy->OnDestroyed.AddDynamic(this, &ATDEnemySpawner::OnEnemyDestroyed);
 		
