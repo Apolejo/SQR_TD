@@ -416,3 +416,101 @@ Weight (optional if using budget-spend logic)
 Modifiers (e.g., “+20% fast enemies”, “flying only”)
 
 BossInfo (optional)
+
+Token-bucket cap (operational checklist)
+
+Initialize: GameState.MaxConcurrentEnemies = N; WaveManager.AvailableTokens = N.
+
+Spawner tick:
+
+Request BurstSize tokens → receives K = min(BurstSize, AvailableTokens).
+
+Spawn K enemies; after each spawn: WaveManager.OnEnemySpawned() → AliveEnemies++; AvailableTokens--; update GameState.
+
+If 0 tokens, pause this spawner until OnEnemyGone() fires.
+
+Enemy death/despawn/goal:
+
+Call WaveManager.OnEnemyGone() → AliveEnemies--; AvailableTokens++; update GameState; signal spawners to resume if paused.
+
+Wave end condition:
+
+All groups finished AND AliveEnemies == 0.
+
+UI bindings (minimal)
+
+WBP_TopBar ← bind to GameState.CurrentWave, AliveEnemies, MaxConcurrentEnemies, TeamLives, WaveTimeRemaining.
+
+WBP_WavePreview ← query DA_Wave.Groups, display enemy icons + tags.
+
+WBP_BuildPanel ← iterate DA_Tower assets; disabled state if PlayerState.Gold < Cost.
+
+Co-op scaling knobs (add now for later)
+
+HealthMultiplierPerExtraPlayer (float, default 0.6) → applied via DA_Enemy.HealthPerPlayerCurve or a simple formula.
+
+BudgetMultiplierPerExtraPlayer (float, default 0.5) → applied to DA_Wave.BudgetPoints.
+
+GoldSplitMode (enum: Even / LastHit / WeightedByDamage). Start with Even.
+
+Validation rules (server)
+
+Build: within allowed volume, on grid if enabled, no overlap with reserved path, Gold >= Cost.
+
+Upgrade: Tower.Owner == RequestingPlayer (if ownership matters), Gold >= UpgradeCost, within upgrade limits.
+
+Sell: optional cooldown; refund Cost * SellRefundPercent.
+
+Performance guardrails
+
+Set Net Cull Distance on enemies; reduce frequency for far actors.
+
+Use Timers for behavior loops (no per-tick scans).
+
+Pool Projectile actors & common impact FX.
+
+Limit sphere overlaps for targeting (0.2–0.5s cadence).
+
+Prefer hitscan for fast-rate towers.
+
+First playable “Vertical Slice” (order of work)
+
+Core state: GameMode, GameState, PlayerState; hook TopBar UI.
+
+WaveManager + one EnemySpawner; DA_Wave with a single group; cap = 20; token bucket live.
+
+EnemyBase w/ spline or simple waypoint path; death and goal events hooked to WaveManager & GameMode.
+
+Economy: kill bounty → PlayerState.Gold; simple even split.
+
+TowerBase hitscan; build system with server validation; one upgrade level.
+
+Intermission & Ready-up: 10–20s delay; Server_SetPlayerReady gated start.
+
+Add second enemy (fast/low HP) & second tower (slow debuff) to test tags/effects.
+
+Loss condition: TeamLives reaches 0.
+
+QA / Testing checklist
+
+Host + 1 client in PIE with artificial latency (e.g., 80–120ms).
+
+Verify: building denied/approved correctly; gold sync; AliveEnemies never exceeds cap.
+
+Pull token stress test: 3 spawners bursting simultaneously.
+
+Intermission timer doesn’t drift between clients (show GameState value).
+
+Join-in-progress (optional): new client sees correct counts & UI.
+
+Optional niceties (when time allows)
+
+Ping/Marker: PC RPC → multicast world widget for 3s.
+
+Tower targeting priorities UI.
+
+Wave mutators (e.g., “Armored Week”).
+
+Save meta-progress in GameInstanceSubsystem (unlocks).
+
+Analytics: log wave fail wave#, enemy type causing most leaks, average player gold spend.
