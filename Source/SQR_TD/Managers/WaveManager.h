@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Net/UnrealNetwork.h"
-#include "Engine/Curve.h"
+#include "Curves/CurveFloat.h"
 #include "SQR_TD/Data/DA_Wave.h"
 #include "SQR_TD/Core/TDSpawningStructures.h"
 #include "WaveManager.generated.h"

@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "Engine/Engine.h"
+#include "EngineUtils.h"
 
 ATDEnemySpawner::ATDEnemySpawner()
 {
@@ -18,15 +19,17 @@ void ATDEnemySpawner::BeginPlay()
 	// Find wave manager
 	if (HasAuthority())
 	{
-		WaveManager = Cast<ATDWaveManager>(GetWorld()->SpawnActor<ATDWaveManager>());
+		// Try to find existing wave manager first
+		for (TActorIterator<ATDWaveManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		{
+			WaveManager = *ActorItr;
+			break;
+		}
+		
+		// If not found, spawn one
 		if (!WaveManager)
 		{
-			// Try to find existing wave manager
-			for (TActorIterator<ATDWaveManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-			{
-				WaveManager = *ActorItr;
-				break;
-			}
+			WaveManager = GetWorld()->SpawnActor<ATDWaveManager>();
 		}
 	}
 }
@@ -50,22 +53,16 @@ void ATDEnemySpawner::SetSpawnGroups(const TArray<FSpawnGroup>& Groups)
 	}
 
 	// Clear existing queue
-	while (!SpawnQueue.IsEmpty())
-	{
-		FSpawnGroup TempGroup;
-		SpawnQueue.Dequeue(TempGroup);
-	}
+	SpawnQueue.Empty();
 
 	// Add new groups to queue
-	for (const FSpawnGroup& Group : Groups)
-	{
-		SpawnQueue.Enqueue(Group);
-	}
+	SpawnQueue = Groups;
 
 	// Start with first group
-	if (!SpawnQueue.IsEmpty())
+	CurrentGroupIndex = 0;
+	if (SpawnQueue.Num() > 0)
 	{
-		SpawnQueue.Dequeue(CurrentGroup);
+		CurrentGroup = SpawnQueue[0];
 		RemainingInGroup = CurrentGroup.Count;
 		RemainingInBurst = FMath::Min(CurrentGroup.BurstSize, RemainingInGroup);
 	}
@@ -92,7 +89,7 @@ void ATDEnemySpawner::SetPaused(bool bPaused)
 
 bool ATDEnemySpawner::IsGroupFinished() const
 {
-	return RemainingInGroup <= 0 && SpawnQueue.IsEmpty();
+	return RemainingInGroup <= 0 && CurrentGroupIndex >= SpawnQueue.Num() - 1;
 }
 
 void ATDEnemySpawner::StartSpawning()
@@ -148,9 +145,10 @@ void ATDEnemySpawner::TickSpawn()
 			if (RemainingInGroup <= 0)
 			{
 				// Move to next group
-				if (!SpawnQueue.IsEmpty())
+				CurrentGroupIndex++;
+				if (CurrentGroupIndex < SpawnQueue.Num())
 				{
-					SpawnQueue.Dequeue(CurrentGroup);
+					CurrentGroup = SpawnQueue[CurrentGroupIndex];
 					RemainingInGroup = CurrentGroup.Count;
 					RemainingInBurst = FMath::Min(CurrentGroup.BurstSize, RemainingInGroup);
 				}

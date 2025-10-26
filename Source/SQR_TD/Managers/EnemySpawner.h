@@ -44,7 +44,7 @@ public:
 
 	// Spawn queue
 	UPROPERTY(BlueprintReadOnly, Category = "Spawn Data")
-	TQueue<FSpawnGroup> SpawnQueue;
+	TArray<FSpawnGroup> SpawnQueue;
 
 	// Spawner methods
 	UFUNCTION(BlueprintCallable, Category = "Spawner Management")
@@ -85,6 +85,7 @@ private:
 	FSpawnGroup CurrentGroup;
 	int32 RemainingInGroup = 0;
 	int32 RemainingInBurst = 0;
+	int32 CurrentGroupIndex = 0;
 
 	// Wave manager reference
 	UPROPERTY()
