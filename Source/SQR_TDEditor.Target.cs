@@ -10,6 +10,6 @@ public class SQR_TDEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
-		ExtraModuleNames.Add("SQR_TD");
+		ExtraModuleNames.AddRange(new string[] { "SQR_TD", "SQR_TDEditor" });
 	}
 }
