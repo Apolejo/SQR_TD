@@ -4,12 +4,16 @@
 #include "SQR_TD/Enemies/EnemyBase.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
+#include "Components/SceneComponent.h"
 #include "TimerManager.h"
 
 ATDEnemySpawner::ATDEnemySpawner()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
+	
+	// Create a root component for network relevance
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 
 void ATDEnemySpawner::BeginPlay()

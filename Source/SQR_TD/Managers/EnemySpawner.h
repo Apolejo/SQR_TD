@@ -27,19 +27,19 @@ protected:
 
 public:
 	// Spawner properties
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
 	int32 LaneID = 0;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
 	FTransform SpawnPoint;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
 	bool bPausedByCap = false;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
 	int32 BurstSize = 1;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Spawner Settings")
 	float SpawnInterval = 1.0f;
 
 	// Spawn queue

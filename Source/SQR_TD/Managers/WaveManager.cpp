@@ -2,13 +2,20 @@
 #include "SQR_TD/Data/DA_Wave.h"
 #include "SQR_TD/Core/SQR_TDGameState.h"
 #include "SQR_TD/Managers/EnemySpawner.h"
+#include "SQR_TD/Core/TDSpawningStructures.h"
+#include "SQR_TD/Enemies/EnemyBase.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
+#include "Components/SceneComponent.h"
 #include "TimerManager.h"
 
 ATDWaveManager::ATDWaveManager()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
+	
+	// Create a root component for network relevance
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 
 void ATDWaveManager::BeginPlay()
@@ -264,13 +271,36 @@ void ATDWaveManager::UpdateGameState()
 
 void ATDWaveManager::DistributeSpawnGroups()
 {
-	// This would distribute spawn groups from the current wave data to spawners
-	// Implementation depends on how wave data is structured
+	// Find all enemy spawners in the world if we don't have any references
+	if (SpawnerRefs.Num() == 0)
+	{
+		for (TActorIterator<ATDEnemySpawner> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		{
+			ATDEnemySpawner* Spawner = *ActorItr;
+			if (Spawner)
+			{
+				SpawnerRefs.Add(Spawner);
+			}
+		}
+	}
+
+	// Create a basic spawn group for testing
+	FSpawnGroup TestGroup;
+	TestGroup.EnemyClass = AEnemyBase::StaticClass();
+	TestGroup.Count = 5; // Spawn 5 enemies for testing
+	TestGroup.SpawnInterval = 2.0f; // Every 2 seconds
+	TestGroup.BurstSize = 1; // One at a time
+
+	TArray<FSpawnGroup> TestGroups;
+	TestGroups.Add(TestGroup);
+
+	// Distribute spawn groups to all spawners
 	for (ATDEnemySpawner* Spawner : SpawnerRefs)
 	{
 		if (Spawner)
 		{
-			// Spawner->SetSpawnGroups(CurrentWaveSpawnGroups);
+			Spawner->SetSpawnGroups(TestGroups);
+			Spawner->StartSpawning();
 		}
 	}
 }
