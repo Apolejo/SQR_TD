@@ -26,6 +26,7 @@ void ATDWaveManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ATDWaveManager, CurrentWaveIndex);
 	DOREPLIFETIME(ATDWaveManager, AliveEnemies);
 	DOREPLIFETIME(ATDWaveManager, MaxConcurrentEnemies);
+	DOREPLIFETIME(ATDWaveManager, AvailableTokens);
 	DOREPLIFETIME(ATDWaveManager, bWaveRunning);
 	DOREPLIFETIME(ATDWaveManager, WaveBudgetRemaining);
 }
@@ -52,6 +53,9 @@ void ATDWaveManager::InitWave(int32 WaveIndex)
 	}
 
 	UpdateGameState();
+	
+	// Broadcast wave initialized event
+	OnWaveInitialized(CurrentWaveIndex);
 }
 
 void ATDWaveManager::StartWave()
@@ -72,6 +76,9 @@ void ATDWaveManager::StartWave()
 	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, this, &ATDWaveManager::OnWaveTimerExpired, 60.0f, false);
 
 	UpdateGameState();
+	
+	// Broadcast wave started event
+	OnWaveStarted(CurrentWaveIndex);
 }
 
 void ATDWaveManager::PauseSpawning()
@@ -89,6 +96,9 @@ void ATDWaveManager::PauseSpawning()
 			Spawner->SetPaused(true);
 		}
 	}
+	
+	// Broadcast wave paused event
+	OnWavePaused(CurrentWaveIndex);
 }
 
 void ATDWaveManager::ResumeSpawning()
@@ -106,6 +116,9 @@ void ATDWaveManager::ResumeSpawning()
 			Spawner->SetPaused(false);
 		}
 	}
+	
+	// Broadcast wave resumed event
+	OnWaveResumed(CurrentWaveIndex);
 }
 
 int32 ATDWaveManager::TryGrantTokens(int32 Requested)
@@ -117,6 +130,17 @@ int32 ATDWaveManager::TryGrantTokens(int32 Requested)
 
 	int32 Granted = FMath::Min(Requested, AvailableTokens);
 	AvailableTokens -= Granted;
+	
+	// Broadcast token events
+	if (Granted > 0)
+	{
+		OnTokensGranted(Granted, AvailableTokens);
+	}
+	else
+	{
+		OnTokensExhausted();
+	}
+	
 	return Granted;
 }
 
@@ -129,6 +153,9 @@ void ATDWaveManager::OnEnemySpawned()
 
 	AliveEnemies++;
 	UpdateGameState();
+	
+	// Broadcast enemy spawned event
+	OnEnemySpawnedGlobal(AliveEnemies);
 }
 
 void ATDWaveManager::OnEnemyGone()
@@ -141,6 +168,9 @@ void ATDWaveManager::OnEnemyGone()
 	AliveEnemies = FMath::Max(0, AliveEnemies - 1);
 	AvailableTokens = FMath::Min(MaxConcurrentEnemies, AvailableTokens + 1);
 	UpdateGameState();
+	
+	// Broadcast enemy destroyed event
+	OnEnemyDestroyedGlobal(AliveEnemies);
 }
 
 void ATDWaveManager::OnGroupFinished(ATDEnemySpawner* Spawner)
@@ -163,6 +193,8 @@ void ATDWaveManager::OnGroupFinished(ATDEnemySpawner* Spawner)
 
 	if (bAllFinished && AliveEnemies == 0)
 	{
+		// Broadcast all spawners finished event
+		OnAllSpawnersFinished(CurrentWaveIndex);
 		EndWave();
 	}
 }
@@ -181,6 +213,10 @@ void ATDWaveManager::EndWave()
 	GetWorld()->GetTimerManager().SetTimer(IntermissionTimerHandle, this, &ATDWaveManager::OnIntermissionTimerExpired, IntermissionDuration, false);
 
 	UpdateGameState();
+	
+	// Broadcast wave ended and intermission started events
+	OnWaveEnded(CurrentWaveIndex);
+	OnIntermissionStarted(IntermissionDuration);
 }
 
 int32 ATDWaveManager::ScaleForPlayers(int32 Base, int32 Players)
@@ -211,6 +247,9 @@ void ATDWaveManager::OnIntermissionTimerExpired()
 		// Start next wave
 		InitWave(CurrentWaveIndex + 1);
 		StartWave();
+		
+		// Broadcast intermission ended event
+		OnIntermissionEnded(CurrentWaveIndex);
 	}
 }
 

@@ -32,22 +32,22 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave Data")
 	TArray<UDataAsset*> Waves;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave State")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Wave State")
 	int32 CurrentWaveIndex = 0;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy State")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Enemy State")
 	int32 AliveEnemies = 0;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy State")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Enemy State")
 	int32 MaxConcurrentEnemies = 50;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Token System")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Token System")
 	int32 AvailableTokens = 0;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave State")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Wave State")
 	bool bWaveRunning = false;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave State")
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Wave State")
 	int32 WaveBudgetRemaining = 0;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Wave Settings")
@@ -96,6 +96,43 @@ public:
 
 	UFUNCTION()
 	void OnIntermissionTimerExpired();
+
+	// Blueprint Events - Important Game Moments
+	UFUNCTION(BlueprintImplementableEvent, Category = "Wave Events")
+	void OnWaveInitialized(int32 WaveIndex);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Wave Events")
+	void OnWaveStarted(int32 WaveIndex);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Wave Events")
+	void OnWaveEnded(int32 WaveIndex);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Wave Events")
+	void OnWavePaused(int32 WaveIndex);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Wave Events")
+	void OnWaveResumed(int32 WaveIndex);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Enemy Events")
+	void OnEnemySpawnedGlobal(int32 TotalAliveEnemies);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Enemy Events")
+	void OnEnemyDestroyedGlobal(int32 TotalAliveEnemies);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Token Events")
+	void OnTokensGranted(int32 TokensGranted, int32 RemainingTokens);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Token Events")
+	void OnTokensExhausted();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Intermission Events")
+	void OnIntermissionStarted(float Duration);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Intermission Events")
+	void OnIntermissionEnded(int32 NextWaveIndex);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawner Events")
+	void OnAllSpawnersFinished(int32 WaveIndex);
 
 private:
 	// Timer handles

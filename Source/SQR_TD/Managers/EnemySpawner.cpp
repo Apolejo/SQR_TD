@@ -75,7 +75,18 @@ void ATDEnemySpawner::SetPaused(bool bPaused)
 		return;
 	}
 
+	bool bWasPaused = bPausedByCap;
 	bPausedByCap = bPaused;
+	
+	// Broadcast pause/resume events
+	if (bPaused && !bWasPaused)
+	{
+		OnSpawningPaused(LaneID);
+	}
+	else if (!bPaused && bWasPaused)
+	{
+		OnSpawningResumed(LaneID);
+	}
 	
 	if (bPaused)
 	{
@@ -101,6 +112,9 @@ void ATDEnemySpawner::StartSpawning()
 
 	// Start timer-driven spawning
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ATDEnemySpawner::TickSpawn, SpawnInterval, true);
+	
+	// Broadcast spawning started event
+	OnSpawningStarted(LaneID);
 }
 
 void ATDEnemySpawner::StopSpawning()
@@ -111,6 +125,9 @@ void ATDEnemySpawner::StopSpawning()
 	}
 
 	GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
+	
+	// Broadcast spawning stopped event
+	OnSpawningStopped(LaneID);
 }
 
 void ATDEnemySpawner::TickSpawn()
@@ -144,6 +161,9 @@ void ATDEnemySpawner::TickSpawn()
 			// Check if group is complete
 			if (RemainingInGroup <= 0)
 			{
+				// Broadcast group finished event
+				OnGroupFinished(CurrentGroupIndex, LaneID);
+				
 				// Move to next group
 				CurrentGroupIndex++;
 				if (CurrentGroupIndex < SpawnQueue.Num())
@@ -155,6 +175,7 @@ void ATDEnemySpawner::TickSpawn()
 				else
 				{
 					// All groups finished
+					OnAllGroupsFinished(LaneID);
 					NotifyWaveManager();
 					StopSpawning();
 				}
@@ -178,6 +199,9 @@ void ATDEnemySpawner::SpawnEnemyGroup(const FSpawnGroup& Group)
 	CurrentGroup = Group;
 	RemainingInGroup = Group.Count;
 	RemainingInBurst = FMath::Min(Group.BurstSize, RemainingInGroup);
+	
+	// Broadcast group started event
+	OnGroupStarted(CurrentGroupIndex, LaneID);
 	
 	StartSpawning();
 }
@@ -207,6 +231,9 @@ void ATDEnemySpawner::SpawnEnemy(TSubclassOf<AActor> EnemyClass)
 		{
 			WaveManager->OnEnemySpawned();
 		}
+		
+		// Broadcast enemy spawned event
+		OnEnemySpawned(SpawnedEnemy, LaneID);
 	}
 }
 
@@ -235,10 +262,20 @@ void ATDEnemySpawner::RequestTokens()
 {
 	if (WaveManager && !bPausedByCap)
 	{
+		// Broadcast token request event
+		OnTokenRequested(RemainingInBurst, LaneID);
+		
 		int32 TokensGranted = WaveManager->TryGrantTokens(RemainingInBurst);
 		if (TokensGranted > 0)
 		{
+			// Broadcast tokens granted event
+			OnTokensGranted(TokensGranted, LaneID);
 			SetPaused(false);
+		}
+		else
+		{
+			// Broadcast tokens denied event
+			OnTokensDenied(RemainingInBurst, LaneID);
 		}
 	}
 }

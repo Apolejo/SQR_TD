@@ -62,6 +62,40 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawner Management")
 	void StopSpawning();
 
+	// Blueprint Events - Important Spawning Moments
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnSpawningStarted(int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnSpawningStopped(int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnSpawningPaused(int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnSpawningResumed(int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnEnemySpawned(AActor* SpawnedEnemy, int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnGroupStarted(int32 GroupIndex, int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnGroupFinished(int32 GroupIndex, int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnAllGroupsFinished(int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnTokenRequested(int32 RequestedTokens, int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnTokensGranted(int32 GrantedTokens, int32 SpawnLaneID);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawning Events")
+	void OnTokensDenied(int32 RequestedTokens, int32 SpawnLaneID);
+
 	// Timer-driven spawning
 	UFUNCTION()
 	void TickSpawn();
