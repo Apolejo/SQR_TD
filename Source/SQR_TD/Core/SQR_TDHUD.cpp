@@ -1,11 +1,11 @@
 #include "SQR_TDHUD.h"
 
-ASQR_TDHUD::ASQR_TDHUD()
+ATDHUD::ATDHUD()
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ASQR_TDHUD::BeginPlay()
+void ATDHUD::BeginPlay()
 {
 	Super::BeginPlay();
 }

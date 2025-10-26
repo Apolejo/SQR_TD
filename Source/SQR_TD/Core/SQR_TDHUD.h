@@ -6,19 +6,42 @@
 
 /**
  * HUD for Square Tower Defense
- * Manages UI display and Blueprint integration
+ * Blueprint placeholder - UI implementation will be done in Blueprint
  */
-UCLASS()
-class SQR_TD_API ASQR_TDHUD : public AHUD
+UCLASS(Blueprintable, BlueprintType)
+class SQR_TD_API ATDHUD : public AHUD
 {
 	GENERATED_BODY()
 
 public:
-	ASQR_TDHUD();
+	ATDHUD();
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	// UI management and Blueprint hooks (to be implemented)
+	// Blueprint hooks for UI management
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnWaveStarted(int32 WaveNumber);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnWaveEnded(int32 WaveNumber);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnGoldChanged(int32 NewGold);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnScoreChanged(int32 NewScore);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnTeamLivesChanged(int32 NewLives);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnAliveEnemiesChanged(int32 NewCount);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void ShowError(const FText& ErrorMessage);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void PlayPing(const FVector& PingLocation);
 };
